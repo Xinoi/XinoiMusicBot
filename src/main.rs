@@ -40,7 +40,7 @@ impl EventHandler for Handler {
 #[tokio::main]
 async fn main() {
     // Configure the client with your Discord bot token in the environment.
-    let token = env::var("MTA3NTQwMDU5MzI0NzU2NzkwMg.GXGSWs.SAqW44YkMTgRJgH_5a6pl25B0v0Efjg3OQgt7Q").expect("Expected a token in the environment");
+    let token = env::var("Token").expect("Expected a token in the environment");
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
