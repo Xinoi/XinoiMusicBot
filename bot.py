@@ -4,7 +4,7 @@ from pytube import YouTube, Search
 import os
 import audiofile
 
-TOKEN = 'MTA3NTQwMDU5MzI0NzU2NzkwMg.GyBrkj.Altl7gLVuR-SkaumnPyTn7ridE0R1Uxg6GpIwo'
+TOKEN = 'MTA3NTQwMDU5MzI0NzU2NzkwMg.GJ2jCv.tsgEN8n5rxln6IWTaIN5wj4mnX2x1A8ZNkYURc'
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -14,21 +14,10 @@ async def getAudio(url):
     yt = YouTube(url)
     video = yt.streams.filter(only_audio=True).first()
     out_file = video.download(os.getcwd())
-
     base, ext = os.path.splitext(out_file)
     new_file = base + '.mp3'
     os.rename(out_file, new_file)
-    return yt.title + ".mp3"
-
-@bot.command(name='join')
-async def join(ctx):
-    author = ctx.message.author
-    await ctx.send("-trying to connect-")
-    if author.voice:
-        channel = author.voice.channel
-        await channel.connect()
-    else:
-        await ctx.send("please connect to voice channel!")
+    return base + ".mp3"
 
 @bot.command(name='leave')
 async def leave(ctx):
@@ -41,10 +30,22 @@ async def leave(ctx):
 
 @bot.command(name='play')
 async def play(ctx, url):
-    server = ctx.message.guild
-    voice_channel = server.voice_client
-    filename = await getAudio(url)
-    await ctx.send("playing: " + filename)
-    voice_channel.play(audiofile.read(discord.FFmpegPCMAudio(source=filename)))
-        
+    author = ctx.message.author
+    channel = author.voice.channel
+    voice_channel = ctx.message.guild.voice_client
+    #if voice_channel.is_playing():
+        #await ctx.send("-trying to connect-")
+    #else:
+        #await ctx.send("-already playing-")
+    if author.voice:
+        await channel.connect()
+    else:
+        await ctx.send("please connect to voice channel!")
+    try:
+        filename = await getAudio(url)
+        await ctx.send("-playing-" + filename)
+        voice_channel.play(discord.FFmpegPCMAudio(source=filename))
+    except:
+        await ctx.send("-UUPS that didnt work -> try it like this: !play [Youtube Link]-")
+        await voice_channel.disconnect()
 bot.run(TOKEN)
